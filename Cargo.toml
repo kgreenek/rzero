@@ -1,0 +1,11 @@
+[package]
+name = "rzero"
+description = "rzero"
+version = "0.1.0"
+authors = ["Kevin Greene <kgreenek@gmail.com>"]
+
+[dependencies]
+
+[lib]
+name = "rzerolib"
+crate-type = ["cdylib"]
