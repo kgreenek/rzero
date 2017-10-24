@@ -7,5 +7,5 @@ authors = ["Kevin Greene <kgreenek@gmail.com>"]
 [dependencies]
 
 [lib]
-name = "rzerolib"
+name = "rzero"
 crate-type = ["cdylib"]
