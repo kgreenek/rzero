@@ -8,4 +8,4 @@ authors = ["Kevin Greene <kgreenek@gmail.com>"]
 
 [lib]
 name = "rzero"
-crate-type = ["cdylib"]
+crate-type = ["staticlib", "cdylib"]
