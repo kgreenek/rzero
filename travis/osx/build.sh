@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 # MacOS
 cargo build --target x86_64-apple-darwin

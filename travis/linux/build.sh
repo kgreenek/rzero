@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 # Linux
 cross build --target x86_64-unknown-linux-gnu

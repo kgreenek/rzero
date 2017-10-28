@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 # NOTE: We don't need to add x86_64-apple-darwin because it's installed by default.
 rustup target add i686-apple-darwin
 rustup target add aarch64-apple-ios

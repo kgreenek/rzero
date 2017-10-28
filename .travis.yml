@@ -1,21 +1,15 @@
 sudo: required
-
 os:
   - linux
   - osx
-
 services:
     - docker
-
 language: rust
 rust:
     - stable
-
 cache: cargo
-
 install:
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - ./travis/$TRAVIS_OS_NAME/install.sh
-
 script:
   - ./travis/$TRAVIS_OS_NAME/build.sh
