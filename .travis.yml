@@ -5,28 +5,41 @@ language: rust
 rust:
   - stable
   - beta
+os:
+  - linux
+  - osx
 env:
+  - RZERO_TARGET=x86_64-unknown-linux-gnu
+  - RZERO_TARGET=i686-unknown-linux-gnu
+  - RZERO_TARGET=x86_64-pc-windows-gnu
+  - RZERO_TARGET=i686-pc-windows-gnu
+  - RZERO_TARGET=aarch64-linux-android
+  - RZERO_TARGET=arm-linux-androideabi
+  - RZERO_TARGET=i686-linux-android
+  - RZERO_TARGET=x86_64-apple-darwin
+  - RZERO_TARGET=i686-apple-darwin
+  - RZERO_TARGET=universal-apple-ios
 matrix:
-  include:
-    - os: linux
+  exclude:
+    - os: osx
       env: RZERO_TARGET=x86_64-unknown-linux-gnu
-    - os: linux
+    - os: osx
       env: RZERO_TARGET=i686-unknown-linux-gnu
-    - os: linux
+    - os: osx
       env: RZERO_TARGET=x86_64-pc-windows-gnu
-    - os: linux
+    - os: osx
       env: RZERO_TARGET=i686-pc-windows-gnu
-    - os: linux
+    - os: osx
       env: RZERO_TARGET=aarch64-linux-android
-    - os: linux
+    - os: osx
       env: RZERO_TARGET=arm-linux-androideabi
-    - os: linux
+    - os: osx
       env: RZERO_TARGET=i686-linux-android
-    - os: osx
+    - os: linux
       env: RZERO_TARGET=x86_64-apple-darwin
-    - os: osx
+    - os: linux
       env: RZERO_TARGET=i686-apple-darwin
-    - os: osx
+    - os: linux
       env: RZERO_TARGET=universal-apple-ios
 #cache: cargo
 install:
