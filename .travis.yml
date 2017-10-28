@@ -1,15 +1,35 @@
 sudo: required
-os:
-  - linux
-  - osx
 services:
-    - docker
+  - docker
 language: rust
 rust:
-    - stable
-cache: cargo
+  - stable
+  - beta
+env:
+matrix:
+  include:
+    - os: linux
+      env: RZERO_TARGET=x86_64-unknown-linux-gnu
+    - os: linux
+      env: RZERO_TARGET=i686-unknown-linux-gnu
+    - os: linux
+      env: RZERO_TARGET=x86_64-pc-windows-gnu
+    - os: linux
+      env: RZERO_TARGET=i686-pc-windows-gnu
+    - os: linux
+      env: RZERO_TARGET=aarch64-linux-android
+    - os: linux
+      env: RZERO_TARGET=arm-linux-androideabi
+    - os: linux
+      env: RZERO_TARGET=i686-linux-android
+    - os: osx
+      env: RZERO_TARGET=x86_64-apple-darwin
+    - os: osx
+      env: RZERO_TARGET=i686-apple-darwin
+    - os: osx
+      env: RZERO_TARGET=universal-apple-ios
+#cache: cargo
 install:
-  #  - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - ./travis/$TRAVIS_OS_NAME/install.sh
+  - ./travis/install.sh
 script:
-  - ./travis/$TRAVIS_OS_NAME/build.sh
+  - ./travis/build.sh
