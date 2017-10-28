@@ -11,25 +11,11 @@ language: rust
 rust:
     - stable
 
+cache: cargo
+
 install:
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cargo install cross ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo install cargo-lipo ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rustup target add i686-apple-darwin ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rustup target add aarch64-apple-ios ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rustup target add armv7-apple-ios ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rustup target add armv7s-apple-ios ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rustup target add i386-apple-ios ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rustup target add x86_64-apple-ios ; fi
+  - ./travis/$TRAVIS_OS_NAME/install.sh
 
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target aarch64-linux-android ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target arm-linux-androideabi ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target i686-linux-android ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target i686-pc-windows-gnu ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target i686-unknown-linux-gnu ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target x86_64-pc-windows-gnu ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target x86_64-unknown-linux-gnu ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target i686-apple-darwin ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target x86_64-apple-darwin ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo lipo --release ; fi
+  - ./travis/$TRAVIS_OS_NAME/build.sh
