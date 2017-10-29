@@ -15,6 +15,7 @@ fi
 
 $DIR/build_deploy_${TRAVIS_OS_NAME}.sh
 
+libs=(librzero.so librzero.a librzero.dylib rzero.dll)
 target_dir="$DIR/../target"
 deploy_dir="$DIR/../deploy"
 mkdir -p $deploy_dir
@@ -33,6 +34,9 @@ for target_subdir in $target_dir/*/; do
     target_name="universal-apple-ios"
   fi
   mkdir -p $target_name
-  cp -f $target_subdir/release/*rzero.* $target_name
+  for lib in ${libs[@]}; do
+    lib_file=$target_subdir/release/$lib
+    [[ -e $lib_file ]] && cp -f $lib_file $target_name
+  done
   zip -r $target_name.zip $target_name
 done
