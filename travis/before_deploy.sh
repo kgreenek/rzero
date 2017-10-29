@@ -1,5 +1,6 @@
 #!/bin/bash -ex
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+$DIR/build_deploy_${TRAVIS_OS_NAME}.sh
 target_dir="$DIR/../target"
 deploy_dir="$DIR/../deploy"
 mkdir -p $deploy_dir
