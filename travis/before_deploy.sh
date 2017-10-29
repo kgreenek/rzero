@@ -1,6 +1,20 @@
 #!/bin/bash -ex
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cargo install cross --force
+if [[ $TRAVIS_OS_NAME == "osx" ]]; then
+  # NOTE: We don't need to add x86_64-apple-darwin because it's installed by default.
+  rustup target add i686-apple-darwin
+  rustup target add aarch64-apple-ios
+  rustup target add armv7-apple-ios
+  rustup target add armv7s-apple-ios
+  rustup target add i386-apple-ios
+  rustup target add x86_64-apple-ios
+  cargo install cargo-lipo --force
+fi
+
 $DIR/build_deploy_${TRAVIS_OS_NAME}.sh
+
 target_dir="$DIR/../target"
 deploy_dir="$DIR/../deploy"
 mkdir -p $deploy_dir

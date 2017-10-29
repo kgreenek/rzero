@@ -13,8 +13,6 @@ matrix:
   allow_failures:
     - rust: nightly
 cache: cargo
-install:
-  - ./travis/install.sh
 before_deploy: ./travis/before_deploy.sh
 deploy:
   provider: releases
