@@ -18,6 +18,7 @@ $DIR/build_deploy_${TRAVIS_OS_NAME}.sh
 target_dir="$DIR/../target"
 deploy_dir="$DIR/../deploy"
 mkdir -p $deploy_dir
+cd $deploy_dir
 for target_subdir in $target_dir/*/; do
   target_subdir=${target_subdir%*/}
   target_name=${target_subdir##*/}
@@ -31,8 +32,7 @@ for target_subdir in $target_dir/*/; do
     # which isn't as descriptive as we would like.
     target_name="universal-apple-ios"
   fi
-  dest_dir="$deploy_dir/$target_name"
-  mkdir -p $dest_dir/release
-  cp -f $target_subdir/release/*rzero.* $dest_dir/release
-  zip -r $deploy_dir/$target_name.zip $dest_dir
+  mkdir -p $target_name
+  cp -f $target_subdir/release/*rzero.* $target_name
+  zip -r $target_name.zip $target_name
 done
