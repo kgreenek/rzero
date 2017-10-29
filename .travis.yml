@@ -1,34 +1,25 @@
 sudo: required
-
+services:
+  - docker
+language: rust
+rust:
+  - stable
+  - beta
+  - nightly
 os:
   - linux
   - osx
-
-services:
-    - docker
-
-language: rust
-rust:
-    - stable
-
-install:
-  - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cargo install cross ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rustup target add i686-apple-darwin ; fi
-
-script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target aarch64-linux-android ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target arm-linux-androideabi ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target i686-linux-android ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target i686-pc-windows-gnu ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target i686-unknown-linux-gnu ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target x86_64-pc-windows-gnu ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cross build --release --target x86_64-unknown-linux-gnu ; fi
-# TODO(kgreenek): Figure out how to support iOS builds.
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target aarch64-apple-ios ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target armv7-apple-ios ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target armv7s-apple-ios ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target i386-apple-ios ; fi
-#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target x86_64-apple-ios ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target i686-apple-darwin ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cargo build --release --target x86_64-apple-darwin ; fi
+matrix:
+  allow_failures:
+    - rust: nightly
+cache: cargo
+before_deploy: ./travis/before_deploy.sh
+deploy:
+  provider: releases
+  api_key:
+    secure: aZuE8gOuK/1K4UWeUQdu4HR6g/nrs9YjbyZOCZbhwdomi63EbAUxUfd7w4ZWYiGR0XUE7UvM4NTaUj2il0x9A65Wf4ekcNutfPYL1qDHuD/6UBPZtK9QST3uzmBeZ+WYsZRC5jLtdEI7yb8/luzCi6yDmR/NgEDAMEqTcN1j4uHNbszFlZ7yMTBNPkMvLtjySKs8FICMJENJh65qbswfS2Ditm2jZK02SvUfQNT0bLNVVTVMW5rAIACHAe+04ILhNPXr4Ns/Cw0UT2lWbPGaIcYDRuQdS3JLaIL6HgkmLAK8g/S7MwY8B6A88GgAhd8nvm6bGMEWOy9xEJZMPVHhGZzWK8oARHVFxIUgc6H1WlYy3djKzINEK/aA9BnunZ7Y8908jyTPUJL9JzdUWrpKNXyVaMC6bMoVjHXyapucxVGcgIxrBngTuHMnuBlYvSJq1Ip2fVKQXec5NLDCW26RXDme9W+hav52uZRMHBCAp4zmREznHTmLTgtONwS+lxNp+DT14gx1plMgcGcRirbjHwjr/2fyrKDI8WtJnH+c6HYcPOQbM8Q+VRNqXG8XLqDUVX7GJT06n/DyWCKBCxv8LfipKBVhQwpYAWVOrLHrw7rvI0jRRvFKiZI00ep/Gn+8j8SiVbzfkn/+d0T2YJNdlECCihhyYAQ/4T6uTa8UoBI=
+  file_glob: true
+  file: "deploy/*.zip"
+  on:
+    tags: true
+    condition: $TRAVIS_RUST_VERSION = stable
