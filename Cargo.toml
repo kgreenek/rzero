@@ -8,4 +8,11 @@ authors = ["Kevin Greene <kgreenek@gmail.com>"]
 
 [lib]
 name = "rzero"
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[profile.release]
+lto = true
+
+[dev-dependencies]
+hound = "2.0"
+clap = "2.27"
