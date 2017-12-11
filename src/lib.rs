@@ -1,3 +1,7 @@
+extern crate sample;
+
+pub mod acf;
+
 #[no_mangle]
 pub extern "C" fn extract_pitch_raw(
     input_ptr: *mut f32,

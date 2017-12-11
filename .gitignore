@@ -2,3 +2,4 @@
 /deploy/
 **/*.rs.bk
 Cargo.lock
+**.swp
