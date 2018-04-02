@@ -1,6 +1,7 @@
 extern crate sample;
 
 pub mod acf;
+pub mod pitch_extractor;
 
 #[no_mangle]
 pub extern "C" fn extract_pitch_raw(
