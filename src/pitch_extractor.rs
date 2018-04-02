@@ -93,7 +93,6 @@ impl<F> PitchExtractor<F> for YinPitchExtractor<F> where F: Frame {
     ///   let mut pitch_extractor = YinPitchExtractor::<[f32; 1]>::new(2, 8);
     ///   pitch_extractor.add_frames(
     ///       &[[0.0], [1.0], [0.0], [-1.0], [0.0], [1.0], [0.0], [-1.0], [0.0]][..]);
-    ///   pitch_extractor.extract_pitch();
     ///   assert_eq!(pitch_extractor.extract_pitch(), [4]);
     /// }
     /// ```
