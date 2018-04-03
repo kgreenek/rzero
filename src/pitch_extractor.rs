@@ -25,7 +25,7 @@ pub trait PitchExtractor<F> where F: Frame {
 #[derive(Clone)]
 pub struct YinPitchExtractor<F> where F: Frame {
     acf: acf::DiffSquaredAcf<F>,
-    pub acf_norm: Vec<F::Float>,
+    acf_norm: Vec<F::Float>,
     pitch: Vec<usize>,
     dirty: bool,
 }
