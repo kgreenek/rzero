@@ -18,6 +18,7 @@ $DIR/build_deploy_${TRAVIS_OS_NAME}.sh
 libs=(librzero.so librzero.a librzero.dylib rzero.dll)
 target_dir="$DIR/../target"
 deploy_dir="$DIR/../deploy"
+rzero_h="$DIR/../rzero.h"
 mkdir -p $deploy_dir
 cd $deploy_dir
 for target_subdir in $target_dir/*/; do
@@ -38,5 +39,6 @@ for target_subdir in $target_dir/*/; do
     lib_file=$target_subdir/release/$lib
     [[ -e $lib_file ]] && cp -f $lib_file $target_name
   done
+  cp $rzero_h $target_name
   zip -r $target_name.zip $target_name
 done
