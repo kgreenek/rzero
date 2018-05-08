@@ -11,7 +11,7 @@ use std::sync::Mutex;
 
 lazy_static! {
     static ref PITCH_EXTRACTOR: Mutex<pitch_extractor::YinPitchExtractor<[f32; 1]>> =
-        Mutex::new(pitch_extractor::YinPitchExtractor::<[f32; 1]>::new(4, 4));
+        Mutex::new(pitch_extractor::YinPitchExtractor::<[f32; 1]>::new(50, 50));
 }
 
 #[no_mangle]
@@ -25,10 +25,10 @@ pub extern "C" fn rzero_extract_pitch(
         let frames = sample::slice::to_frame_slice::<&[f32], [f32; 1]>(input).unwrap();
         let mut pitch_extractor_ = PITCH_EXTRACTOR.lock().unwrap();
         pitch_extractor_.add_frames(frames);
-        let pitch = pitch_extractor_.extract_pitch();
-        println!("Pitch: {}", (pitch[0] as f64) / sample_rate);
+        let pitch_samples = pitch_extractor_.extract_pitch();
+        let pitch = sample_rate / (pitch_samples[0] as f64);
+        pitch as f32
     }
-    0.0
 }
 
 
