@@ -11,7 +11,7 @@ use std::sync::Mutex;
 
 lazy_static! {
     static ref PITCH_EXTRACTOR: Mutex<pitch_extractor::YinPitchExtractor<[f32; 1]>> =
-        Mutex::new(pitch_extractor::YinPitchExtractor::<[f32; 1]>::new(50, 50));
+        Mutex::new(pitch_extractor::YinPitchExtractor::<[f32; 1]>::new(100, 150));
 }
 
 #[no_mangle]
