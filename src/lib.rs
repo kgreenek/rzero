@@ -4,7 +4,6 @@ pub mod acf;
 pub mod pitch_extractor;
 
 use pitch_extractor::{PitchExtractor, YinPitchExtractor};
-use std::sync::Mutex;
 
 #[no_mangle]
 pub extern "C" fn rzero_extract_pitch(
@@ -13,7 +12,7 @@ pub extern "C" fn rzero_extract_pitch(
     length: usize,
     sample_rate: f64,
 ) -> f32 {
-    let mut pitch_extractor = unsafe { &mut *pitch_extractor_ptr };
+    let pitch_extractor = unsafe { &mut *pitch_extractor_ptr };
     let input = unsafe { std::slice::from_raw_parts(input_ptr, length as usize) };
     let frames = sample::slice::to_frame_slice::<&[f32], [f32; 1]>(input).unwrap();
     pitch_extractor.add_frames(frames);
