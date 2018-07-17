@@ -1,36 +1,43 @@
 extern crate sample;
 
-#[macro_use]
-extern crate lazy_static;
-
 pub mod acf;
 pub mod pitch_extractor;
 
-use pitch_extractor::PitchExtractor;
+use pitch_extractor::{PitchExtractor, YinPitchExtractor};
 use std::sync::Mutex;
-
-lazy_static! {
-    static ref PITCH_EXTRACTOR: Mutex<pitch_extractor::YinPitchExtractor<[f32; 1]>> =
-        Mutex::new(pitch_extractor::YinPitchExtractor::<[f32; 1]>::new(100, 150));
-}
 
 #[no_mangle]
 pub extern "C" fn rzero_extract_pitch(
+    pitch_extractor_ptr: *mut YinPitchExtractor<[f32; 1]>,
     input_ptr: *const f32,
     length: usize,
     sample_rate: f64,
 ) -> f32 {
-    unsafe {
-        let input = std::slice::from_raw_parts(input_ptr, length as usize);
-        let frames = sample::slice::to_frame_slice::<&[f32], [f32; 1]>(input).unwrap();
-        let mut pitch_extractor_ = PITCH_EXTRACTOR.lock().unwrap();
-        pitch_extractor_.add_frames(frames);
-        let pitch_samples = pitch_extractor_.extract_pitch();
-        let pitch = sample_rate / (pitch_samples[0] as f64);
-        pitch as f32
-    }
+    let mut pitch_extractor = unsafe { &mut *pitch_extractor_ptr };
+    let input = unsafe { std::slice::from_raw_parts(input_ptr, length as usize) };
+    let frames = sample::slice::to_frame_slice::<&[f32], [f32; 1]>(input).unwrap();
+    pitch_extractor.add_frames(frames);
+    let pitch_samples = pitch_extractor.extract_pitch();
+    let pitch = sample_rate / (pitch_samples[0] as f64);
+    pitch as f32
 }
 
+#[no_mangle]
+pub extern "C" fn rzero_new_pitch_extractor() -> *mut YinPitchExtractor<[f32; 1]> {
+    let _pitch_extractor = unsafe {
+        std::mem::transmute(Box::new(YinPitchExtractor::<[f32; 1]>::new(100, 150)))
+    };
+    _pitch_extractor
+}
+
+#[no_mangle]
+pub extern "C" fn rzero_free_pitch_extractor(
+    pitch_extractor_ptr: *mut YinPitchExtractor<[f32; 1]>
+) {
+    let _pitch_extractor: Box<YinPitchExtractor<[f32; 1]>> =
+        unsafe{ std::mem::transmute(pitch_extractor_ptr) };
+    // Drop _pitch_extractor automatically.
+}
 
 //#[no_mangle]
 //pub extern "C" fn extract_pitch_raw_old(
