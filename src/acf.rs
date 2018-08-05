@@ -8,8 +8,10 @@ use sample::{ring_buffer, Frame, Sample};
 /// In order to properly calculate all of the auto-correlation values, the `next` method must be
 /// called with at least `window_size() + max_t` frames. Prior to that, the output acf values are
 /// undefined.
-pub trait Acf<F> where F: Frame {
-
+pub trait Acf<F>
+where
+    F: Frame,
+{
     /// Updates the calculated acf with `new_frame`. Returns the updated acf values. The `current`
     /// method will return this same slice after the call to `next` completes.
     fn next(&mut self, new_frame: F) -> &[F::Float];
@@ -119,12 +121,19 @@ where
         let diff_squared_fn = &diff_squared::<<F::Float as Frame>::Sample>;
         self.frame_buffer.push(new_frame.to_float_frame());
         for t in 1..(self.max_t + 1) {
-            let new_diff_squared: F::Float = self.get_frame(t)
-                .zip_map(*self.get_frame(0), diff_squared_fn);
-            let old_diff_squared: F::Float = self.get_frame(t + self.window_size)
-                .zip_map(*self.get_frame(self.window_size), diff_squared_fn);
-            self.acf[t] = self.acf[t].add_amp(new_diff_squared)
-                .zip_map(old_diff_squared, |acf_sample, old_diff_squared_sample| {
+            let new_diff_squared: F::Float = self.get_frame(t).zip_map(
+                *self.get_frame(0),
+                diff_squared_fn,
+            );
+            let old_diff_squared: F::Float = self.get_frame(t + self.window_size).zip_map(
+                *self.get_frame(
+                    self.window_size,
+                ),
+                diff_squared_fn,
+            );
+            self.acf[t] = self.acf[t].add_amp(new_diff_squared).zip_map(
+                old_diff_squared,
+                |acf_sample, old_diff_squared_sample| {
                     let diff = acf_sample - old_diff_squared_sample;
                     // Don't let floating point rounding errors put us below 0.0.
                     if diff < <F::Sample as Sample>::Float::equilibrium() {
@@ -132,7 +141,8 @@ where
                     } else {
                         diff
                     }
-                });
+                },
+            );
         }
         &self.acf
     }

@@ -2,7 +2,10 @@ use acf;
 use acf::Acf;
 use sample::{Frame, Sample};
 
-pub trait PitchExtractor<F> where F: Frame {
+pub trait PitchExtractor<F>
+where
+    F: Frame,
+{
     fn n_channels() -> usize;
 
     /// Adds the new frame and returns the pitch for the buffer with the frame incorporated.
@@ -23,17 +26,23 @@ pub trait PitchExtractor<F> where F: Frame {
 }
 
 #[derive(Clone)]
-pub struct YinPitchExtractor<F> where F: Frame {
+pub struct YinPitchExtractor<F>
+where
+    F: Frame,
+{
     acf: acf::DiffSquaredAcf<F>,
     acf_norm: Vec<F::Float>,
     pitch: Vec<usize>,
     dirty: bool,
 }
 
-impl<F> YinPitchExtractor<F> where F: Frame {
+impl<F> YinPitchExtractor<F>
+where
+    F: Frame,
+{
     pub fn new(window_size: usize, max_t: usize) -> Self {
         let mut acf_norm = vec![F::Float::equilibrium(); max_t];
-        acf_norm[0] = acf_norm[0].map(|_| { <F::Float as Frame>::Sample::identity() });
+        acf_norm[0] = acf_norm[0].map(|_| <F::Float as Frame>::Sample::identity());
         YinPitchExtractor {
             acf: acf::DiffSquaredAcf::new(window_size, max_t),
             acf_norm: acf_norm,
@@ -57,7 +66,10 @@ impl<F> YinPitchExtractor<F> where F: Frame {
     }
 }
 
-impl<F> PitchExtractor<F> for YinPitchExtractor<F> where F: Frame {
+impl<F> PitchExtractor<F> for YinPitchExtractor<F>
+where
+    F: Frame,
+{
     #[inline]
     fn n_channels() -> usize {
         F::n_channels()
