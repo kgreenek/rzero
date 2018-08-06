@@ -8,7 +8,7 @@ use pitch_extractor::{PitchExtractor, YinPitchExtractor};
 const CHANNELS: usize = 1;
 const WINDOW_SIZE: usize = 100;
 const PITCH_MAX_T: usize = 150;
-const RMS_THRESHOLD: f32 = 0.1;
+const RMS_THRESHOLD: f32 = 0.01;
 
 type SampleT = f32;
 type FrameT = [SampleT; CHANNELS];
