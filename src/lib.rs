@@ -6,12 +6,12 @@ pub mod pitch_extractor;
 use pitch_extractor::{PitchExtractor, YinPitchExtractor};
 
 pub const CHANNELS: usize = 1;
-pub const RMS_THRESHOLD: f32 = 0.02;
+pub const RMS_THRESHOLD: f32 = 0.03;
 
 // TODO(kgreenek): Set these values at run-time as parameters independent of the sample rate.
 // Reasonable values for a sample rate of 16khz.
-const WINDOW_SIZE: usize = 100;
-const PITCH_MAX_T: usize = 150;
+pub const WINDOW_SIZE: usize = 100;
+pub const PITCH_MAX_T: usize = 150;
 // Reasonable values for a sample rate of 44.1khz.
 //pub const WINDOW_SIZE: usize = 256;
 //pub const PITCH_MAX_T: usize = 1024;

@@ -116,16 +116,11 @@ where
         self.update_acf_norm();
         for channel in 0..F::n_channels() {
             self.pitch[channel] = 0;
-            let mut acf_norm_min_value = *self.acf_norm[0].channel(channel).unwrap();
             for (frame_index, &acf_norm_frame) in self.acf_norm[..].iter().enumerate() {
                 let acf_norm_sample = acf_norm_frame.channel(channel).unwrap();
                 if *acf_norm_sample < 0.1.to_sample() {
                     self.pitch[channel] = frame_index;
                     break;
-                }
-                if *acf_norm_sample < acf_norm_min_value {
-                    acf_norm_min_value = *acf_norm_sample;
-                    self.pitch[channel] = frame_index;
                 }
             }
         }
