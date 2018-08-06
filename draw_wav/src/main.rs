@@ -7,12 +7,18 @@ extern crate sample;
 use rustplotlib::Figure;
 use sample::{Sample, Signal};
 
-fn make_figure<'a>(x: &'a [f64], y: &'a [f64], duration_secs: f64) -> Figure<'a> {
+fn make_figure<'a>(
+    x: &'a [f64],
+    wav_data: &'a [f64],
+    pitch_data: &'a [f64],
+    rms_data: &'a [f64],
+    duration_secs: f64,
+) -> Figure<'a> {
     use rustplotlib::{Axes2D, Line2D};
     let ax1 = Axes2D::new()
         .add(
             Line2D::new("WAV file")
-                .data(x, y)
+                .data(x, wav_data)
                 .color("green")
                 .marker("")
                 .linestyle("-")
@@ -23,7 +29,38 @@ fn make_figure<'a>(x: &'a [f64], y: &'a [f64], duration_secs: f64) -> Figure<'a>
         .ylabel("Value")
         .xlim(0.0, duration_secs)
         .ylim(-1.5, 1.5);
-    Figure::new().subplots(1, 1, vec![Some(ax1)])
+
+    let ax2 = Axes2D::new()
+        .add(
+            Line2D::new("Pitch Hz")
+                .data(x, pitch_data)
+                .color("red")
+                .marker("")
+                .linestyle("-")
+                .linewidth(1.0),
+        )
+        .grid(true)
+        .xlabel("Time (s)")
+        .ylabel("Pitch (hz)")
+        .xlim(0.0, duration_secs)
+        .ylim(0.0, 1000.0);
+
+    let ax3 = Axes2D::new()
+        .add(
+            Line2D::new("RMS")
+                .data(x, rms_data)
+                .color("blue")
+                .marker("")
+                .linestyle("-")
+                .linewidth(1.0),
+        )
+        .grid(true)
+        .xlabel("Time (s)")
+        .ylabel("RMS")
+        .xlim(0.0, duration_secs)
+        .ylim(0.0, 1.0);
+
+    Figure::new().subplots(3, 1, vec![Some(ax1), Some(ax2), Some(ax3)])
 }
 
 fn main() {
@@ -63,7 +100,19 @@ fn main() {
     for i in 0..x.len() {
         x[i] = (i as f64) / (sample_rate as f64);
     }
-    let figure = make_figure(&x, &frames_vec, duration_secs);
+
+    let mut pitch_extractor = rzero::PitchExtractorContainer::new();
+    let mut rms_vec = Vec::with_capacity(frames_vec.len());
+    let pitches_vec: Vec<_> = frames_vec
+        .iter()
+        .map(|frame: &f64| {
+            pitch_extractor.add_frames(&[[frame.to_sample::<f32>()]]);
+            rms_vec.push(pitch_extractor.rms() as f64);
+            pitch_extractor.pitch(sample_rate as f64) as f64
+        })
+        .collect();
+
+    let figure = make_figure(&x, &frames_vec, &pitches_vec, &rms_vec, duration_secs);
 
     use rustplotlib::Backend;
     use rustplotlib::backend::Matplotlib;
