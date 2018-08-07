@@ -23,6 +23,8 @@ type WindowSliceT = [FrameT; WINDOW_SIZE];
 pub struct PitchExtractorContainer {
     pitch_extractor: YinPitchExtractor<FrameT>,
     rms: sample::rms::Rms<FrameT, WindowSliceT>,
+    pitch: f32,
+    good_pitches: usize,
 }
 
 impl PitchExtractorContainer {
@@ -33,29 +35,34 @@ impl PitchExtractorContainer {
         Self {
             pitch_extractor: YinPitchExtractor::<FrameT>::new(WINDOW_SIZE, PITCH_MAX_T),
             rms: rms,
+            pitch: 0.0,
+            good_pitches: 0,
         }
     }
 
-    pub fn add_frames(&mut self, new_frames: &[FrameT]) {
-        self.pitch_extractor.add_frames(new_frames);
-        for &frame in new_frames.iter() {
-            self.rms.next(frame);
-        }
-    }
-
-    pub fn pitch(&mut self, sample_rate: f64) -> f32 {
-        let pitch_t: f64;
+    pub fn next(&mut self, frame: FrameT, sample_rate: f64) -> f32 {
+        self.rms.next(frame);
+        let pitch_t: usize;
         {
-            let pitch_frame = self.pitch_extractor.extract_pitch();
-            pitch_t = pitch_frame[0] as f64;
+            let pitch_frame = self.pitch_extractor.next(frame);
+            pitch_t = pitch_frame[0];
         }
-        if pitch_t == 0.0 {
-            return 0.0;
+        self.pitch = 0.0;
+        if pitch_t > 0 && self.rms() >= RMS_THRESHOLD {
+            self.good_pitches += 1;
+        } else {
+            self.good_pitches = 0;
         }
-        if self.rms() >= RMS_THRESHOLD {
-            return (sample_rate / (pitch_t as f64)) as f32;
+        // TODO(kgreenek): Pass this as a parameter to the YinPitchExtractor.
+        if self.good_pitches > PITCH_MAX_T * 2 {
+            self.pitch = (sample_rate / (pitch_t as f64)) as f32;
         }
-        0.0
+        self.current()
+    }
+
+    #[inline]
+    pub fn current(&self) -> f32 {
+        self.pitch
     }
 
     pub fn rms(&self) -> f32 {
@@ -73,8 +80,10 @@ pub extern "C" fn rzero_extract_pitch(
     let container = unsafe { &mut *pitch_extractor_ptr };
     let input = unsafe { std::slice::from_raw_parts(input_ptr, length) };
     let frames = sample::slice::to_frame_slice::<&[SampleT], FrameT>(input).unwrap();
-    container.add_frames(frames);
-    container.pitch(sample_rate)
+    for &frame in frames {
+        container.next(frame, sample_rate);
+    }
+    container.current()
 }
 
 #[no_mangle]

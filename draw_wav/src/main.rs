@@ -106,9 +106,9 @@ fn main() {
     let pitches_vec: Vec<_> = frames_vec
         .iter()
         .map(|frame: &f64| {
-            pitch_extractor.add_frames(&[[frame.to_sample::<f32>()]]);
+            pitch_extractor.next([frame.to_sample::<f32>()], sample_rate as f64);
             rms_vec.push(pitch_extractor.rms() as f64);
-            pitch_extractor.pitch(sample_rate as f64) as f64
+            pitch_extractor.current() as f64
         })
         .collect();
 
